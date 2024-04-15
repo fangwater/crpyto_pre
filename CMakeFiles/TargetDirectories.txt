@@ -1,3 +1,0 @@
-/home/fanghaizhou/project/crypto_pre/build/CMakeFiles/test.dir
-/home/fanghaizhou/project/crypto_pre/build/CMakeFiles/edit_cache.dir
-/home/fanghaizhou/project/crypto_pre/build/CMakeFiles/rebuild_cache.dir
