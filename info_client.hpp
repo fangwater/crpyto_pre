@@ -1,6 +1,6 @@
-#ifndef INFO_CLIENT_CLIENT
-#define INFO_CLIENT_CLIENT
-#include "InfoReceiver.hpp"
+#ifndef INFO_CLIENT
+#define INFO_CLIENT
+#include "info_receiver.hpp"
 #include <nlohmann/json.hpp>
 #include <simdjson.h>
 #include <string>

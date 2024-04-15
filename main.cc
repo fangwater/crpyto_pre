@@ -1,21 +1,24 @@
 #include "crypto_info.hpp"
 #include "period_receiver.hpp"
 #include "symbols_process.hpp"
-#include <thread>
+#include <folly/executors/CPUThreadPoolExecutor.h>
+#include <memory>
 
 int main() {
     std::string url = "wss://vps.mgsd.cc:8090/ws";
-    // for (int i = 0; i < SymbolConfig::instance().symbol_partition.size(); i++) {
-    //     std::jthread t([i] {
-
-    //     });
-    // }
-    // auto &main_sym = SymbolConfig::instance().symbol_partition[0];
-    // PeriodReceiver<CryptoTradeInfo> trade_client(SymbolConfig::instance().symbol_partition[0], url, 3 * 1000);
-    // trade_client.run();
-    auto &sym = SymbolConfig::instance().symbol_partition[0];
-    PeriodReceiver<CryptoIncrementOrderBookInfo> orderbook_client(sym, url, 3 * 1000);
-    orderbook_client.run();
+    int k = SymbolConfig::instance().symbol_partition.size();
+    auto clients = std::make_shared<folly::CPUThreadPoolExecutor>(2*k);
+    for (int i = 0; i < SymbolConfig::instance().symbol_partition.size(); i++) {
+        auto &sym = SymbolConfig::instance().symbol_partition[i];
+        clients->add([i, &url]() {
+            PeriodReceiver<CryptoTradeInfo> trade_client(SymbolConfig::instance().symbol_partition[i], url, 3 * 1000);
+            trade_client.run();
+        });
+        clients->add([i, &url]() {
+            PeriodReceiver<CryptoIncrementOrderBookInfo> orderbook_client(SymbolConfig::instance().symbol_partition[i], url, 3 * 1000);
+            orderbook_client.run();
+        });
+    }
 }
 
 // 
